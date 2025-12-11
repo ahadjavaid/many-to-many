@@ -1,6 +1,10 @@
 package com.luv2code.cruddemo.entity;
 
 import jakarta.persistence.*;
+import org.springframework.aop.target.LazyInitTargetSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -16,6 +20,12 @@ public class Student {
     private String lastName;
     @Column(name = "email")
     private String email;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH,
+            CascadeType.REFRESH},
+            mappedBy = "students")
+    private List<Course> courses;
+
 
     public Student() {
 
@@ -59,6 +69,24 @@ public class Student {
         this.email = email;
     }
 
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+    // add convenience method
+
+    public void addCourse(Course theCourse) {
+        if(courses == null) {
+            courses = new ArrayList<>();
+        }
+        courses.add(theCourse);
+        theCourse.addStudent(this);
+    }
 
     @Override
     public String toString() {
