@@ -48,7 +48,7 @@ public class AppDAOImpl implements AppDAO {
         // get the courses
         List<Course> courses = tempInstructor.getCourses();
         // break association of all courses for the instructor
-        for (var tempCourse : courses) {
+        for (Course tempCourse : courses) {
             tempCourse.setInstructor(null);
         }
         entityManager.remove(tempInstructor);
@@ -77,6 +77,7 @@ public class AppDAOImpl implements AppDAO {
     @Override
     public Course findCourseAndReviewsByCourseId(int theId) {
 
+
         // create the query
         TypedQuery<Course> query = entityManager.createQuery("select c from Course c "
                                     + "JOIN FETCH c.reviews "
@@ -86,6 +87,25 @@ public class AppDAOImpl implements AppDAO {
         // execute query
         Course course = query.getSingleResult();
         return  course;
+    }
+
+    @Override
+    public Course findCourseAndStudentsByCourseId(int theId) {
+
+        Course tempCourse = entityManager.find(Course.class, theId);
+        if(tempCourse == null) {
+            throw  new RuntimeException("Course not found with id: " + theId);
+        }
+        // create query
+
+        TypedQuery<Course> query = entityManager.createQuery("select c from Course c "
+                                                                + "JOIN FETCH c.students "
+                                                                + "where c.id = :data", Course.class);
+        query.setParameter("data",theId);
+
+        // execute query
+        Course course = query.getSingleResult();
+        return course;
     }
 
     @Override
