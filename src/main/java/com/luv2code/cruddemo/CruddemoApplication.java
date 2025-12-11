@@ -20,9 +20,41 @@ public class CruddemoApplication {
 	public CommandLineRunner commandLineRunner(AppDAO appDAO) {
 		return runner -> {
 //            createCourseAndStudent(appDAO);
-            findCourseAndStudents(appDAO);
+//            findCourseAndStudents(appDAO);
+//            findStudentAndCourses(appDAO);
+            addMoreCoursesForStudents(appDAO);
 		};
 	}
+
+    private void addMoreCoursesForStudents(AppDAO appDAO) {
+         int theId = 2;
+         Student tempStudent = appDAO.findStudentAndCoursesByStudentId(theId);
+
+         // create more courses
+
+        Course tempCourse1 = new Course("Applied Physics - 1");
+        Course tempCourse2 = new Course("Data Structures & Algorithms");
+
+        // add courses to Student
+
+        tempStudent.addCourse(tempCourse1);
+        tempStudent.addCourse(tempCourse2);
+
+        System.out.println("Updating student: " + tempStudent);
+        System.out.println("Associated courses: " + tempStudent.getCourses());
+
+        appDAO.update(tempStudent);
+
+        System.out.println("Done!");
+    }
+
+    private void findStudentAndCourses(AppDAO appDAO) {
+        int id = 2;
+        Student tempStudent = appDAO.findStudentAndCoursesByStudentId(id);
+        System.out.println("Student: " + tempStudent);
+        System.out.println("Associated courses: " + tempStudent.getCourses());
+        System.out.println("Done!");
+    }
 
     private void findCourseAndStudents(AppDAO appDAO) {
         int id = 10;

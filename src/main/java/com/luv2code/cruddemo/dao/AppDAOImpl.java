@@ -3,12 +3,14 @@ package com.luv2code.cruddemo.dao;
 import com.luv2code.cruddemo.entity.Course;
 import com.luv2code.cruddemo.entity.Instructor;
 import com.luv2code.cruddemo.entity.InstructorDetail;
+import com.luv2code.cruddemo.entity.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Repository
@@ -106,6 +108,30 @@ public class AppDAOImpl implements AppDAO {
         // execute query
         Course course = query.getSingleResult();
         return course;
+    }
+
+    @Override
+    public Student findStudentAndCoursesByStudentId(int theId) {
+
+        Student student = entityManager.find(Student.class,theId);
+        if(student == null) {
+            throw new RuntimeException("Student not found with id: " + theId);
+        }
+
+        // create query
+        TypedQuery<Student> query = entityManager.createQuery("select s from Student s "
+                                                                + "JOIN FETCH s.courses "
+                                                                + "where s.id =:data", Student.class);
+        query.setParameter("data",theId);
+        // execute query
+        Student tempStudent = query.getSingleResult();
+        return tempStudent;
+    }
+
+    @Override
+    @Transactional
+    public void update(Student tempStudent) {
+        entityManager.merge(tempStudent);
     }
 
     @Override
